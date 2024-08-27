@@ -6,25 +6,25 @@ namespace PropelAuth.Models
     public class OrgMemberInfo
     {
         [JsonProperty("org_id")]
-        public string? orgId { get; set; }
+        public string orgId { get; set; }
 
         [JsonProperty("org_name")]
-        public string? orgName { get; set; }
+        public string orgName { get; set; }
 
         [JsonProperty("url_safe_org_name")]
-        public string? urlSafeOrgName { get; set; }
+        public string urlSafeOrgName { get; set; }
 
         [JsonProperty("org_metadata")]
         public Dictionary<string, object>? orgMetadata { get; set; }
 
         [JsonProperty("user_role")]
-        public string? userRole { get; set; }
+        public string userRole { get; set; }
 
         [JsonProperty("inherited_user_roles_plus_current_role")]
-        public List<string>? inheritedUserRolesPlusCurrentRole { get; set; }
+        public List<string> inheritedUserRolesPlusCurrentRole { get; set; }
 
         [JsonProperty("org_role_structure")]
-        public string? orgRoleStructure { get; set; }
+        public string orgRoleStructure { get; set; }
 
         [JsonProperty("additional_roles")]
         public List<string>? additionalRoles { get; set; }
