@@ -12,14 +12,9 @@ namespace PropelAuth
         {
             string publicKey = options.PublicKey;
 
-            if (!string.IsNullOrEmpty(options.ApiKey))
-            {
-                publicKey = await GetVerifierKeyPemAsync(options.AuthUrl, options.ApiKey);
-            }
-
             if (string.IsNullOrEmpty(publicKey))
             {
-                throw new Exception("Error in initializing library, this is likely due to an incorrect API Key");
+                publicKey = await GetVerifierKeyPemAsync(options.AuthUrl, options.ApiKey);
             }
 
             var rsa = RSA.Create();
