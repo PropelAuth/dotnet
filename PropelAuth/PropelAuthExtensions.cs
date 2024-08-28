@@ -10,11 +10,14 @@ namespace PropelAuth
     {
         public static async Task<IServiceCollection> AddPropelAuthAsync(this IServiceCollection services, PropelAuthOptions options)
         {
-            string publicKey = options.PublicKey;
-
-            if (string.IsNullOrEmpty(publicKey))
+            string publicKey;
+            if (string.IsNullOrEmpty(options.PublicKey))
             {
                 publicKey = await GetVerifierKeyPemAsync(options.AuthUrl, options.ApiKey);
+            }
+            else
+            {
+                publicKey = options.PublicKey;
             }
 
             var rsa = RSA.Create();
