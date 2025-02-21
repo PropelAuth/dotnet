@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace PropelAuth.Models
 {
@@ -13,6 +12,9 @@ namespace PropelAuth.Models
 
         [JsonProperty("url_safe_org_name")]
         public string urlSafeOrgName { get; set; }
+
+        [JsonProperty("legacy_org_id")]
+        public string legacyOrgId { get; set; }
 
         [JsonProperty("org_metadata")]
         public Dictionary<string, object>? orgMetadata { get; set; }
