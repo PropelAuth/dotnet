@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>PropelAuth</PackageId>
-    <Version>0.4.3</Version>
+    <Version>10.4.3</Version>
     <Authors>PropelAuth</Authors>
     <Company>PropelAuth</Company>
     <PackageTags>propelauth;authentication;authorization</PackageTags>
@@ -16,7 +16,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="6.0.19" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.31.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.34.0" />
   </ItemGroup>
 
 </Project>

@@ -36,14 +36,14 @@ namespace PropelAuth.Models
                 {
                     orgIdToOrgMemberInfo = JsonConvert.DeserializeObject<Dictionary<string, OrgMemberInfo>>(orgsClaim.Value);
                 }
-                else
-                {
+                else {
                     var orgInfo = JsonConvert.DeserializeObject<OrgMemberInfo>(orgsClaim.Value);
-                    orgIdToOrgMemberInfo = new Dictionary<string, OrgMemberInfo>
-                {
-                    { orgInfo.orgId ?? "", orgInfo }
-                };
-                    activeOrgId = orgInfo.orgId;
+                    if (orgInfo != null) {
+                        orgIdToOrgMemberInfo = new Dictionary<string, OrgMemberInfo> {
+                        { orgInfo.orgId ?? "", orgInfo }
+                    };
+                        activeOrgId = orgInfo.orgId;
+                    }
                 }
             }
 

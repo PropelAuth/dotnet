@@ -51,7 +51,12 @@ namespace PropelAuth
                 {
                     var content = await response.Content.ReadAsStringAsync();
                     var json = JObject.Parse(content);
-                    return json["verifier_key_pem"].ToString();
+                    var verifierKeyPem = json["verifier_key_pem"]?.ToString();
+                    if (verifierKeyPem == null)
+                    {
+                        throw new Exception("verifier_key_pem is missing in the response");
+                    }
+                    return verifierKeyPem;
                 }
                 else
                 {
