@@ -22,7 +22,7 @@ namespace PropelAuth.Models
         public User(ClaimsPrincipal claimsPrincipal)
         {
             userId = claimsPrincipal.FindFirstValue("user_id");
-            email = claimsPrincipal.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
+            email = claimsPrincipal.FindFirstValue(ClaimTypes.Email);
             firstName = claimsPrincipal.FindFirstValue("first_name");
             lastName = claimsPrincipal.FindFirstValue("last_name");
             username = claimsPrincipal.FindFirstValue("username");
