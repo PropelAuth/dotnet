@@ -16,7 +16,6 @@
     <PackageProjectUrl>https://www.propelauth.com</PackageProjectUrl>
     <RepositoryUrl>https://github.com/propelauth/dotnet</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
     
     <!-- Documentation -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
