@@ -13,35 +13,34 @@ namespace PropelAuth.Tests
             List<string>? inheritedRolesPlusCurrentRole = null,
             List<string>? permissions = null)
         {
-            return new OrgMemberInfo
-            {
-                orgId = "org123",
-                orgName = "Test Organization",
-                urlSafeOrgName = "test-organization",
-                legacyOrgId = "legacy123",
-                orgMetadata = new Dictionary<string, object> {{"industry", "technology"}},
-                userRole = role,
-                inheritedUserRolesPlusCurrentRole = inheritedRolesPlusCurrentRole ?? new List<string> {role},
-                orgRoleStructure = "single_role_in_hierarchy",
-                additionalRoles = null,
-                userPermissions = permissions
-            };
+            return new OrgMemberInfo(
+                org_id: "org123",
+                org_name: "Test Organization",
+                url_safe_org_name: "test-organization",
+                legacy_org_id: "legacy123",
+                org_metadata: new Dictionary<string, object> {{"industry", "technology"}},
+                user_role: role,
+                inherited_user_roles_plus_current_role: inheritedRolesPlusCurrentRole ?? new List<string> {role},
+                org_role_structure: "single_role_in_hierarchy",
+                additional_roles: null,
+                user_permissions: permissions
+            );
         }
 
-        private OrgMemberInfo CreateTestOrgMemberInfoMultiRole(List<string> roles) {
-            return new OrgMemberInfo
-            {
-                orgId = "org123",
-                orgName = "Test Organization",
-                urlSafeOrgName = "test-organization",
-                legacyOrgId = "legacy123",
-                orgMetadata = new Dictionary<string, object> {{"industry", "technology"}},
-                userRole = roles.First(),
-                inheritedUserRolesPlusCurrentRole = roles,
-                orgRoleStructure = "multi_role",
-                additionalRoles = roles.Skip(1).ToList(),
-                userPermissions = null,
-            };
+        private OrgMemberInfo CreateTestOrgMemberInfoMultiRole(List<string> roles)
+        {
+            return new OrgMemberInfo(
+                org_id: "org123",
+                org_name: "Test Organization",
+                url_safe_org_name: "test-organization",
+                legacy_org_id: "legacy123",
+                org_metadata: new Dictionary<string, object> {{"industry", "technology"}},
+                user_role: roles.First(),
+                inherited_user_roles_plus_current_role: roles,
+                org_role_structure: "multi_role",
+                additional_roles: roles.Skip(1).ToList(),
+                user_permissions: null
+            );
         }
 
         [Fact]

@@ -78,18 +78,18 @@ namespace PropelAuth.Tests
             List<string>? inheritedRolesPlusCurrentRole = null,
             List<string>? permissions = null)
         {
-            return new OrgMemberInfo
-            {
-                orgId = orgId,
-                orgName = orgName,
-                urlSafeOrgName = "test-org",
-                legacyOrgId = "legacy123",
-                userRole = role,
-                inheritedUserRolesPlusCurrentRole = inheritedRolesPlusCurrentRole ?? new List<string> {role},
-                orgRoleStructure = "single_role_in_hierarchy",
-                additionalRoles = new List<string>(),
-                userPermissions = permissions
-            };
+            return new OrgMemberInfo(
+                org_id: orgId,
+                org_name: orgName,
+                url_safe_org_name: "test-org",
+                legacy_org_id: "legacy123",
+                org_metadata: null,
+                user_role: role,
+                inherited_user_roles_plus_current_role: inheritedRolesPlusCurrentRole ?? new List<string> {role},
+                org_role_structure: "single_role_in_hierarchy",
+                additional_roles: new List<string>(),
+                user_permissions: permissions
+            );
         }
 
         [Fact]
@@ -102,13 +102,13 @@ namespace PropelAuth.Tests
             var user = new User(principal);
 
             // Assert
-            Assert.Equal("user123", user.userId);
-            Assert.Equal("user@example.com", user.email);
-            Assert.Equal("John", user.firstName);
-            Assert.Equal("Doe", user.lastName);
-            Assert.Equal("johndoe", user.username);
+            Assert.Equal("user123", user.UserId);
+            Assert.Equal("user@example.com", user.Email);
+            Assert.Equal("John", user.FirstName);
+            Assert.Equal("Doe", user.LastName);
+            Assert.Equal("johndoe", user.Username);
             Assert.False(user.IsImpersonated());
-            Assert.Equal(LoginMethodType.Unknown, user.loginMethod.Type);
+            Assert.Equal(LoginMethodType.Unknown, user.LoginMethod.Type);
         }
 
         [Fact]
@@ -125,11 +125,11 @@ namespace PropelAuth.Tests
             var user = new User(principal);
 
             // Assert
-            Assert.Equal("user123", user.userId);
-            Assert.Equal("user@example.com", user.email);
-            Assert.Null(user.firstName);
-            Assert.Null(user.lastName);
-            Assert.Null(user.username);
+            Assert.Equal("user123", user.UserId);
+            Assert.Equal("user@example.com", user.Email);
+            Assert.Null(user.FirstName);
+            Assert.Null(user.LastName);
+            Assert.Null(user.Username);
         }
 
         [Fact]
@@ -144,10 +144,9 @@ namespace PropelAuth.Tests
             var user = new User(principal);
 
             // Assert
-            Assert.NotNull(user.orgIdToOrgMemberInfo);
-            Assert.Single(user.orgIdToOrgMemberInfo);
-            Assert.Equal("org123", user.GetOrgs()[0].orgId);
-            Assert.Equal("Test Org", user.GetOrgs()[0].orgName);
+            Assert.Single(user.GetOrgs());
+            Assert.Equal("org123", user.GetOrgs()[0].OrgId);
+            Assert.Equal("Test Org", user.GetOrgs()[0].OrgName);
         }
 
         [Fact]
@@ -169,7 +168,7 @@ namespace PropelAuth.Tests
             // Assert
             Assert.Equal("org2", user.GetActiveOrgId());
             Assert.NotNull(user.GetActiveOrg());
-            Assert.Equal("Org Two", user.GetActiveOrg()?.orgName);
+            Assert.Equal("Org Two", user.GetActiveOrg()?.OrgName);
         }
 
         [Fact]
@@ -182,7 +181,7 @@ namespace PropelAuth.Tests
             var user = new User(principal);
 
             // Assert
-            Assert.Equal("admin456", user.impersonatorUserId);
+            Assert.Equal("admin456", user.ImpersonatorUserId);
             Assert.True(user.IsImpersonated());
         }
 
@@ -197,7 +196,7 @@ namespace PropelAuth.Tests
             var user = new User(principal);
 
             // Assert
-            Assert.Equal(LoginMethodType.Password, user.loginMethod.Type);
+            Assert.Equal(LoginMethodType.Password, user.LoginMethod.Type);
         }
 
         [Fact]
@@ -211,7 +210,7 @@ namespace PropelAuth.Tests
             var user = new User(principal);
 
             // Assert
-            Assert.Equal(LoginMethodType.MagicLink, user.loginMethod.Type);
+            Assert.Equal(LoginMethodType.MagicLink, user.LoginMethod.Type);
         }
 
         [Fact]
@@ -225,8 +224,8 @@ namespace PropelAuth.Tests
             var user = new User(principal);
 
             // Assert
-            Assert.Equal(LoginMethodType.SocialSso, user.loginMethod.Type);
-            Assert.Equal("google", user.loginMethod.Provider);
+            Assert.Equal(LoginMethodType.SocialSso, user.LoginMethod.Type);
+            Assert.Equal("google", user.LoginMethod.Provider);
         }
 
         [Fact]
@@ -241,9 +240,9 @@ namespace PropelAuth.Tests
             var user = new User(principal);
 
             // Assert
-            Assert.Equal(LoginMethodType.SamlSso, user.loginMethod.Type);
-            Assert.Equal("okta", user.loginMethod.Provider);
-            Assert.Equal("org123", user.loginMethod.OrgId);
+            Assert.Equal(LoginMethodType.SamlSso, user.LoginMethod.Type);
+            Assert.Equal("okta", user.LoginMethod.Provider);
+            Assert.Equal("org123", user.LoginMethod.OrgId);
         }
 
         [Fact]
@@ -267,10 +266,10 @@ namespace PropelAuth.Tests
 
             // Assert
             Assert.NotNull(result1);
-            Assert.Equal("Org One", result1.orgName);
+            Assert.Equal("Org One", result1.OrgName);
 
             Assert.NotNull(result2);
-            Assert.Equal("Org Two", result2.orgName);
+            Assert.Equal("Org Two", result2.OrgName);
 
             Assert.Null(resultNonExistent);
         }
@@ -294,8 +293,8 @@ namespace PropelAuth.Tests
 
             // Assert
             Assert.Equal(2, result.Length);
-            Assert.Contains(result, o => o.orgId == "org1");
-            Assert.Contains(result, o => o.orgId == "org2");
+            Assert.Contains(result, o => o.OrgId == "org1");
+            Assert.Contains(result, o => o.OrgId == "org2");
         }
 
         [Fact]

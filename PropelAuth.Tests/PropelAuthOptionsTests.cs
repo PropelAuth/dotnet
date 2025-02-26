@@ -1,3 +1,4 @@
+using PropelAuth.Models;
 using Xunit;
 
 namespace PropelAuth.Tests
