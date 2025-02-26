@@ -35,9 +35,8 @@ namespace PropelAuth.Models
         /// <param name="claimsPrincipal">The claims principal containing user information.</param>
         public User(ClaimsPrincipal claimsPrincipal)
         {
-            // Extract basic user information
-            UserId = claimsPrincipal.FindFirstValue("user_id");
-            Email = claimsPrincipal.FindFirstValue(ClaimTypes.Email);
+            UserId = ExtractUserId(claimsPrincipal);
+            Email = ExtractEmail(claimsPrincipal);
             FirstName = claimsPrincipal.FindFirstValue("first_name");
             LastName = claimsPrincipal.FindFirstValue("last_name");
             Username = claimsPrincipal.FindFirstValue("username");
@@ -160,6 +159,28 @@ namespace PropelAuth.Models
 
         #region Private Methods
 
+        private string ExtractUserId(ClaimsPrincipal claimsPrincipal)
+        {
+            string? userId = claimsPrincipal.FindFirstValue("user_id");
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentException("Required claim 'user_id' is missing or empty", nameof(claimsPrincipal));
+            }
+
+            return userId;
+        }
+
+        private string ExtractEmail(ClaimsPrincipal claimsPrincipal)
+        {
+            string? email = claimsPrincipal.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new ArgumentException($"Required claim '{ClaimTypes.Email}' is missing or empty", nameof(claimsPrincipal));
+            }
+
+            return email;
+        }
+        
         /// <summary>
         /// Processes organization information from claims.
         /// </summary>
