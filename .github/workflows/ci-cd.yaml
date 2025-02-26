@@ -31,3 +31,32 @@ jobs:
 
       - name: Test
         run: dotnet test --configuration Release --no-build --verbosity normal
+
+  publish:
+    name: Publish to NuGet
+    if: github.event_name == 'release'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            6.x
+            8.x
+            9.x
+
+      - name: Set version from tag
+        run: |
+          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          echo "PACKAGE_VERSION=$TAG_VERSION" >> $GITHUB_ENV
+
+      - name: Build and Pack
+        run: |
+          dotnet build --configuration Release
+          dotnet pack --configuration Release -p:PackageVersion=$PACKAGE_VERSION --no-build --output ./nupkgs
+
+      - name: Push to NuGet
+        run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
