@@ -91,6 +91,12 @@ namespace PropelAuth.Tests
                 user_permissions: permissions
             );
         }
+        
+        private ClaimsPrincipal CreateEmptyClaimsPrincipal()
+        {
+            var identity = new ClaimsIdentity(new List<Claim>(), "TestAuth");
+            return new ClaimsPrincipal(identity);
+        }
 
         [Fact]
         public void Constructor_ShouldInitializeBasicProperties()
@@ -412,6 +418,15 @@ namespace PropelAuth.Tests
 
             // Act & Assert
             Assert.Null(user.GetUserProperty("anyProperty"));
+        }
+        
+        [Fact]
+        public void GetUser_EmptyClaimsPrincipal_ShouldReturnNull()
+        {
+            // Arrange
+            var principal = CreateEmptyClaimsPrincipal();
+
+            Assert.Null(principal.GetUser());
         }
     }
 }
