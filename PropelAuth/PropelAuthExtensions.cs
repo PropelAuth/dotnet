@@ -1,5 +1,9 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
@@ -71,17 +75,70 @@ namespace PropelAuth
         /// <param name="rsa">The RSA instance configured with the public key.</param>
         private static void ConfigureAuthentication(IServiceCollection services, PropelAuthOptions options, RSA rsa)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(jwtOptions =>
+            var authBuilder = services.AddAuthentication(authOptions =>
+            {
+                if (options.OAuthOptions != null)
+                {
+                    authOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    authOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    authOptions.DefaultChallengeScheme = "PropelAuth";
+                }
+                else
+                {
+                    authOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    authOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                }
+            });
+
+            if (options.OAuthOptions == null)
+            {
+                authBuilder.AddJwtBearer(jwtOptions =>
                 {
                     jwtOptions.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateAudience = false,
                         ValidAlgorithms = new List<string>() {"RS256"},
                         ValidIssuer = options.AuthUrl,
-                        IssuerSigningKey = new RsaSecurityKey(rsa)
+                        IssuerSigningKey = new RsaSecurityKey(rsa),
+                        ValidateLifetime = true,
                     };
                 });
+            }
+            else
+            {
+                authBuilder
+                    .AddCookie(cookieOptions =>
+                    {
+                        cookieOptions.Cookie.SameSite = SameSiteMode.Lax;
+                        cookieOptions.Cookie.HttpOnly = true;
+                        cookieOptions.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                        cookieOptions.SlidingExpiration = true;
+                    })
+                    .AddOAuth("PropelAuth", configOptions =>
+                    {
+                        configOptions.AuthorizationEndpoint = $"{options.AuthUrl}/propelauth/oauth/authorize";
+                        configOptions.TokenEndpoint = $"{options.AuthUrl}/propelauth/oauth/token";
+                        configOptions.UserInformationEndpoint = $"{options.AuthUrl}/propelauth/oauth/userinfo";
+                        configOptions.ClientId = options.OAuthOptions.ClientId;
+                        configOptions.ClientSecret = options.OAuthOptions.ClientSecret;
+                        configOptions.CallbackPath = options.OAuthOptions.CallbackPath;
+                        configOptions.SaveTokens = true;
+                        configOptions.Events = new OAuthEvents
+                        {
+                            OnCreatingTicket = context =>
+                            {
+                                var token = context.AccessToken;
+                                var handler = new JwtSecurityTokenHandler();
+                                var jwt = handler.ReadJwtToken(token);
+                                foreach (var claim in jwt.Claims)
+                                {
+                                    context.Identity?.AddClaim(claim);
+                                }
+                                return Task.CompletedTask;
+                            }
+                        };
+                    });
+            }
 
             services.AddAuthorization();
         }
