@@ -90,7 +90,7 @@ namespace PropelAuth
                 }
             });
 
-            if (options.OAuthOptions == null)
+            if (options.OAuthOptions == null || options.OAuthOptions.AllowBearerTokenAuth == true)
             {
                 authBuilder.AddJwtBearer(jwtOptions =>
                 {

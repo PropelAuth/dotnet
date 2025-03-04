@@ -72,6 +72,11 @@ namespace PropelAuth.Models
         /// </summary>
         public string? CallbackPath { get; }
         
+        /// <summary>
+        /// Whether to allow requests via an authorization header `Bearer {TOKEN}`. Default false.
+        /// </summary>
+        public bool? AllowBearerTokenAuth { get; }
+        
         #endregion
 
         #region Constructor
@@ -82,11 +87,13 @@ namespace PropelAuth.Models
         /// <param name="clientId">The client ID for the OAuth application.</param>
         /// <param name="clientSecret">The client secret for the OAuth application.</param>
         /// <param name="callbackPath">Optional. The callback path for the OAuth application. Defaults to "/callback"</param>
-        public OAuthOptions(string clientId, string clientSecret, string? callbackPath = "/callback")
+        /// <param name="allowBearerTokenAuth">Optional. Whether to allow requests via an authorization header `Bearer {TOKEN}`. Default false.</param>
+        public OAuthOptions(string clientId, string clientSecret, string? callbackPath = "/callback", bool? allowBearerTokenAuth = false)
         {
             ClientId = clientId;
             ClientSecret = clientSecret;
             CallbackPath = callbackPath;
+            AllowBearerTokenAuth = allowBearerTokenAuth;
         }
 
         #endregion
