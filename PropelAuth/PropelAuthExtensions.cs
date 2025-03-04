@@ -77,11 +77,17 @@ namespace PropelAuth
         {
             var authBuilder = services.AddAuthentication(authOptions =>
             {
-                if (options.OAuthOptions != null)
+                if (options.OAuthOptions is {AllowBearerTokenAuth: true})
+                {
+                    authOptions.DefaultAuthenticateScheme = "OAuthOrBearer";
+                    authOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    authOptions.DefaultChallengeScheme = "OAuthOrBearer";
+                }
+                else if (options.OAuthOptions != null)
                 {
                     authOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     authOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    authOptions.DefaultChallengeScheme = "PropelAuth";
+                    authOptions.DefaultChallengeScheme = "OAuth";
                 }
                 else
                 {
@@ -89,6 +95,23 @@ namespace PropelAuth
                     authOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 }
             });
+
+            if (options.OAuthOptions is {AllowBearerTokenAuth: true})
+            {
+                authBuilder.AddPolicyScheme("OAuthOrBearer", "OAuth or Bearer", policyOptions =>
+                {
+                    policyOptions.ForwardDefaultSelector = context =>
+                    {
+                        if (context.Request.Headers.ContainsKey("Authorization"))
+                        {
+                            return JwtBearerDefaults.AuthenticationScheme;
+                        }
+
+                        return "OAuth";
+                    };
+                });
+            }
+
 
             if (options.OAuthOptions == null || options.OAuthOptions.AllowBearerTokenAuth == true)
             {
@@ -104,7 +127,8 @@ namespace PropelAuth
                     };
                 });
             }
-            else
+
+            if (options.OAuthOptions != null)
             {
                 authBuilder
                     .AddCookie(cookieOptions =>
@@ -114,7 +138,7 @@ namespace PropelAuth
                         cookieOptions.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                         cookieOptions.SlidingExpiration = true;
                     })
-                    .AddOAuth("PropelAuth", configOptions =>
+                    .AddOAuth("OAuth", configOptions =>
                     {
                         configOptions.AuthorizationEndpoint = $"{options.AuthUrl}/propelauth/oauth/authorize";
                         configOptions.TokenEndpoint = $"{options.AuthUrl}/propelauth/oauth/token";
@@ -134,6 +158,7 @@ namespace PropelAuth
                                 {
                                     context.Identity?.AddClaim(claim);
                                 }
+
                                 return Task.CompletedTask;
                             }
                         };
