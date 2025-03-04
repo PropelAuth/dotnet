@@ -170,9 +170,17 @@ namespace PropelAuth.Models
             return userId;
         }
 
-        private string ExtractEmail(ClaimsPrincipal claimsPrincipal)
+         private string ExtractEmail(ClaimsPrincipal claimsPrincipal)
         {
-            string? email = claimsPrincipal.FindFirstValue(ClaimTypes.Email);
+            string? email = string.Empty;
+            
+            if (claimsPrincipal.FindFirstValue(ClaimTypes.Email) != null) {
+                email = claimsPrincipal.FindFirstValue(ClaimTypes.Email);
+            }
+            else if (claimsPrincipal.Claims.First(c => c.Type == "email")?.Value != null) {
+                email = claimsPrincipal.Claims.First(c => c.Type == "email")?.Value;
+            };
+
             if (string.IsNullOrEmpty(email))
             {
                 throw new ArgumentException($"Required claim '{ClaimTypes.Email}' is missing or empty",
