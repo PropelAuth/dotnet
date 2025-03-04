@@ -175,12 +175,13 @@ namespace PropelAuth.Models
             string? email = claimsPrincipal.FindFirstValue(ClaimTypes.Email);
             if (string.IsNullOrEmpty(email))
             {
-                throw new ArgumentException($"Required claim '{ClaimTypes.Email}' is missing or empty", nameof(claimsPrincipal));
+                throw new ArgumentException($"Required claim '{ClaimTypes.Email}' is missing or empty",
+                    nameof(claimsPrincipal));
             }
 
             return email;
         }
-        
+
         /// <summary>
         /// Processes organization information from claims.
         /// </summary>
@@ -193,7 +194,8 @@ namespace PropelAuth.Models
 
             if (orgsClaim.Type == "org_id_to_org_member_info")
             {
-                OrgIdToOrgMemberInfo = JsonConvert.DeserializeObject<Dictionary<string, OrgMemberInfo>>(orgsClaim.Value);
+                OrgIdToOrgMemberInfo =
+                    JsonConvert.DeserializeObject<Dictionary<string, OrgMemberInfo>>(orgsClaim.Value);
             }
             else
             {
@@ -215,7 +217,9 @@ namespace PropelAuth.Models
         private Dictionary<string, object>? ParseUserProperties(ClaimsPrincipal claimsPrincipal)
         {
             var propertiesClaim = claimsPrincipal.FindFirst("properties");
-            return propertiesClaim != null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(propertiesClaim.Value) : null;
+            return propertiesClaim != null
+                ? JsonConvert.DeserializeObject<Dictionary<string, object>>(propertiesClaim.Value)
+                : null;
         }
 
         /// <summary>
@@ -276,8 +280,8 @@ namespace PropelAuth.Models
             var samlProvider = loginMethodData.TryGetValue("provider", out var samlProviderValue)
                 ? samlProviderValue
                 : "unknown";
-            var orgId = loginMethodData.TryGetValue("org_id", out var orgIdValue) 
-                ? orgIdValue 
+            var orgId = loginMethodData.TryGetValue("org_id", out var orgIdValue)
+                ? orgIdValue
                 : "unknown";
             return LoginMethod.SamlSso(samlProvider, orgId);
         }
@@ -293,6 +297,14 @@ namespace PropelAuth.Models
         /// <summary>
         /// Gets a PropelAuth User from a ClaimsPrincipal.
         /// </summary>
-        public static User GetUser(this ClaimsPrincipal claimsPrincipal) => new(claimsPrincipal);
+        public static User? GetUser(this ClaimsPrincipal claimsPrincipal)
+        {
+            if (claimsPrincipal.FindFirstValue("user_id") == null)
+            {
+                return null;
+            }
+
+            return new User(claimsPrincipal);
+        }
     }
 }
