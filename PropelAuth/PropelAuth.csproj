@@ -7,7 +7,7 @@
     
     <!-- Package metadata -->
     <PackageId>PropelAuth</PackageId>
-    <Version>0.0.1</Version>
+    <Version>0.0.4</Version>
     <Authors>PropelAuth</Authors>
     <Company>PropelAuth</Company>
     <Description>Official .NET SDK for PropelAuth authentication and authorization</Description>
