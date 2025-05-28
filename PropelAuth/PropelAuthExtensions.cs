@@ -26,6 +26,9 @@ namespace PropelAuth
         public static async Task<IServiceCollection> AddPropelAuthAsync(this IServiceCollection services,
             PropelAuthOptions options)
         {
+            // Register the options as a singleton so middleware can access them
+            services.AddSingleton(options);
+
             // Get the public key either from options or from the PropelAuth API
             string publicKey = await GetPublicKeyAsync(options);
 
@@ -137,6 +140,7 @@ namespace PropelAuth
                         cookieOptions.Cookie.HttpOnly = true;
                         cookieOptions.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                         cookieOptions.SlidingExpiration = true;
+                        cookieOptions.ExpireTimeSpan = TimeSpan.FromDays(30);
                     })
                     .AddOAuth("OAuth", configOptions =>
                     {

@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using PropelAuth.Models;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace PropelAuth.Middleware
@@ -18,6 +20,26 @@ namespace PropelAuth.Middleware
         private readonly string _clientId;
         private readonly string _clientSecret;
 
+        // Constructor for DI-based initialization
+        public TokenRefreshMiddleware(
+            RequestDelegate next, 
+            ILogger<TokenRefreshMiddleware> logger,
+            PropelAuthOptions options)
+        {
+            _next = next;
+            _logger = logger;
+            
+            if (options.OAuthOptions == null)
+            {
+                throw new InvalidOperationException("OAuth options are required for token refresh middleware. Ensure PropelAuthOptions includes OAuthOptions when calling AddPropelAuthAsync.");
+            }
+
+            _authUrl = options.AuthUrl;
+            _clientId = options.OAuthOptions.ClientId;
+            _clientSecret = options.OAuthOptions.ClientSecret;
+        }
+
+        // Legacy constructor for backward compatibility
         public TokenRefreshMiddleware(
             RequestDelegate next, 
             ILogger<TokenRefreshMiddleware> logger,
@@ -134,7 +156,7 @@ namespace PropelAuth.Middleware
 
         private async Task UpdateUserTokens(HttpContext context, AuthenticateResult authResult, TokenRefreshResult tokens)
         {
-            if (authResult.Properties != null && !string.IsNullOrEmpty(tokens.AccessToken))
+            if (authResult.Properties != null && !string.IsNullOrEmpty(tokens.AccessToken) && authResult.Principal != null)
             {
                 authResult.Properties.UpdateTokenValue("access_token", tokens.AccessToken);
                 
@@ -196,6 +218,39 @@ namespace PropelAuth.Middleware
     /// </summary>
     public static class TokenRefreshMiddlewareExtensions
     {
+        /// <summary>
+        /// Adds token refresh middleware using PropelAuthOptions from DI container.
+        /// This eliminates the need to specify authUrl, clientId, and clientSecret again.
+        /// </summary>
+        /// <param name="builder">The application builder.</param>
+        /// <returns>The application builder for chaining.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when PropelAuthOptions or OAuthOptions are not configured.</exception>
+        public static IApplicationBuilder UseTokenRefresh(this IApplicationBuilder builder)
+        {
+            var options = builder.ApplicationServices.GetService<PropelAuthOptions>();
+            
+            if (options == null)
+            {
+                throw new InvalidOperationException("PropelAuthOptions not found in DI container. Ensure you've called AddPropelAuthAsync() in your service configuration.");
+            }
+
+            if (options.OAuthOptions == null)
+            {
+                throw new InvalidOperationException("OAuth options are required for token refresh middleware. Ensure PropelAuthOptions includes OAuthOptions when calling AddPropelAuthAsync.");
+            }
+
+            return builder.UseMiddleware<TokenRefreshMiddleware>(options);
+        }
+
+        /// <summary>
+        /// Adds token refresh middleware with explicit parameters.
+        /// This method is maintained for backward compatibility.
+        /// </summary>
+        /// <param name="builder">The application builder.</param>
+        /// <param name="authUrl">The PropelAuth authentication URL.</param>
+        /// <param name="clientId">The OAuth client ID.</param>
+        /// <param name="clientSecret">The OAuth client secret.</param>
+        /// <returns>The application builder for chaining.</returns>
         public static IApplicationBuilder UseTokenRefresh(
             this IApplicationBuilder builder, 
             string authUrl, 
