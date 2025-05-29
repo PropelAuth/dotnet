@@ -76,11 +76,16 @@ namespace PropelAuth.Models
         /// Whether to allow requests via an authorization header `Bearer {TOKEN}`. Default false.
         /// </summary>
         public bool? AllowBearerTokenAuth { get; }
-        
+
+        /// <summary>
+        /// The amount of days the user's session should stay active for. Defaults to 14 days.
+        /// </summary>
+        public double? SessionLength { get; }
+
         #endregion
 
         #region Constructor
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuthOptions"/> class.
         /// </summary>
@@ -88,12 +93,14 @@ namespace PropelAuth.Models
         /// <param name="clientSecret">The client secret for the OAuth application.</param>
         /// <param name="callbackPath">Optional. The callback path for the OAuth application. Defaults to "/callback"</param>
         /// <param name="allowBearerTokenAuth">Optional. Whether to allow requests via an authorization header `Bearer {TOKEN}`. Default false.</param>
-        public OAuthOptions(string clientId, string clientSecret, string? callbackPath = "/callback", bool? allowBearerTokenAuth = false)
+        /// <param name="sessionLength">Optional. The amount of days the user's session should stay active for. Defaults to 14 days.</param>
+        public OAuthOptions(string clientId, string clientSecret, string? callbackPath = "/callback", bool? allowBearerTokenAuth = false, double? sessionLength = 14)
         {
             ClientId = clientId;
             ClientSecret = clientSecret;
             CallbackPath = callbackPath;
             AllowBearerTokenAuth = allowBearerTokenAuth;
+            SessionLength = sessionLength;
         }
 
         #endregion
