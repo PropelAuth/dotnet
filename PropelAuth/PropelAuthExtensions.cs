@@ -140,7 +140,7 @@ namespace PropelAuth
                         cookieOptions.Cookie.HttpOnly = true;
                         cookieOptions.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                         cookieOptions.SlidingExpiration = true;
-                        cookieOptions.ExpireTimeSpan = TimeSpan.FromDays(30);
+                        cookieOptions.ExpireTimeSpan = TimeSpan.FromDays(options.OAuthOptions.SessionLength ?? 14);
                     })
                     .AddOAuth("OAuth", configOptions =>
                     {
