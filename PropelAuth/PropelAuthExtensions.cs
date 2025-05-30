@@ -165,7 +165,14 @@ namespace PropelAuth
                     });
             }
 
-            services.AddAuthorization();
+            if (options.ConfigureAuthorization != null)
+            {
+                services.AddAuthorization(options.ConfigureAuthorization);
+            }
+            else
+            {
+                services.AddAuthorization();
+            }
         }
 
         /// <summary>
