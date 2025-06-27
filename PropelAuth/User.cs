@@ -10,15 +10,41 @@ namespace PropelAuth.Models
     {
         #region Properties
 
-        // Public properties
+        /// <summary>
+        /// The unique identifier for the user.
+        /// </summary>
         public string UserId { get; }
+        /// <summary>
+        /// The email address of the user.
+        /// </summary>
         public string Email { get; }
+        /// <summary>
+        /// The user's first name
+        /// </summary>
         public string? FirstName { get; }
+        /// <summary>
+        /// The user's last name
+        /// </summary>
         public string? LastName { get; }
+        /// <summary>
+        /// The user's username
+        /// </summary>
         public string? Username { get; }
+        /// <summary>
+        /// The user's legacy user ID. This is only set if you migrated from an external source
+        /// </summary>
         public string? LegacyUserId { get; }
+        /// <summary>
+        /// The method the user used to log in. Returns an instance of <see cref="LoginMethod"/> that describes the login method.
+        /// </summary>
         public LoginMethod LoginMethod { get; }
+        /// <summary>
+        /// If the user is being impersonated, this is the ID of the impersonator.
+        /// </summary>
         public string? ImpersonatorUserId { get; }
+        /// <summary>
+        /// Additional properties set on the user.
+        /// </summary>
         public Dictionary<string, object>? Properties { get; }
 
         // Private properties
